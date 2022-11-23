@@ -8,17 +8,19 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('e_mandate_transactions', function (Blueprint $table) {
-            $table->id();
-			$table->string('unique_id')->comment('Unique auto generated reference Id');
-			$table->string('reference_id')->comment('Unique Order no/Reference id');
-			$table->string('transaction_id')->nullable()->comment('Transaction id returned by FPX');
-			$table->string('debit_auth_code')->default('09')->comment('Transaction status code');
-			$table->text('request_payload')->comment('Request data sent to FPX');
-			$table->text('response_payload')->nullable()->comment('Response data received from FPX');
-			$table->string('response_format')->default('HTML')->comment('Response format HTML/JSON');
-            $table->string('additional_params')->nullable();
-			$table->timestamps();
-        });
+        if (! Schema::hasTable(config('e-mandate.transaction_table_name'))) {
+            Schema::create(config('e-mandate.transaction_table_name'), function (Blueprint $table) {
+                $table->id();
+                $table->string('unique_id')->comment('Unique auto generated reference Id');
+                $table->string('reference_id')->comment('Unique Order no/Reference id');
+                $table->string('transaction_id')->nullable()->comment('Transaction id returned by FPX');
+                $table->string('debit_auth_code')->default('09')->comment('Transaction status code');
+                $table->text('request_payload')->comment('Request data sent to FPX');
+                $table->text('response_payload')->nullable()->comment('Response data received from FPX');
+                $table->string('response_format')->default('HTML')->comment('Response format HTML/JSON');
+                $table->string('additional_params')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 };
